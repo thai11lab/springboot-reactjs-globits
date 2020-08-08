@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: sample-project-v2-app
+Implementation-Version: 1.0.0-SNAPSHOT
+Built-By: Thai Anh Dam
+Implementation-Vendor-Id: com.globits
+Build-Jdk: 1.8.0_251
+Implementation-URL: http://maven.apache.org
+Created-By: Maven Integration for Eclipse
+Main-Class: com.globits.SampleApplication
+
