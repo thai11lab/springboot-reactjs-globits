@@ -32,6 +32,15 @@ class JwtAuthService {
     });
   };
 
+  //thái viết
+  loadPageWithToken=()=>{
+    return axios.post(ConstantList.API_ENPOINT+'oauth/token').then(res=>{
+      this.setSession(res.data.access_token);
+      this.setLoginToken(res.data);
+    })
+  }
+
+  
   loginWithEmailAndPassword = (email, password) => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {

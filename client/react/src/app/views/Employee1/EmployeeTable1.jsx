@@ -15,12 +15,14 @@ import {
   Grid,
 } from "@material-ui/core";
 
-import { getAllEmployees, deleteUser,getAllEmployeesBySearch,getAllEmployeesBySearchExcell} from "./EmployeeService1";
+import { getAllEmployees, deleteUser,getAllEmployeesBySearch,getAllEmployeesBySearchExcell,getList} from "./EmployeeService1";
 import MemberEditorDialog from "./MemberEditorDialog1";
 import { Breadcrumb, ConfirmationDialog } from "egret";
+import JwtAuthService from '../../services/jwtAuthService';
 import shortid from "shortid";
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
+import { isThisSecond } from "date-fns";
 class EmployeeTable extends Component {
   state = {
     rowsPerPage: 10,
@@ -28,20 +30,33 @@ class EmployeeTable extends Component {
     userList: [],
     shouldOpenEditorDialog: false,
     shouldOpenConfirmationDialog: false,
-    title:"",
+    title:null,
     totalEmployee:0
   };
 
   setPage = page => {
     this.setState({ page },function(){
-      this.handleSubmit();
-    });
+      if(this.state.title){
+        this.handleSubmit();
+      }else{
+        this.updatePageData(this.state.page,this.state.rowsPerPage);
+      }
+    }
+    );
+      
   };
 
   setRowsPerPage = event => {
     this.setState({ rowsPerPage: event.target.value,page:0},function(){
-      this.handleSubmit();
-    });
+       if(this.state.title){
+        this.handleSubmit();
+       }else{
+        this.updatePageData(this.state.page,this.state.rowsPerPage);
+       }
+    }
+     );
+     
+     
   };
 
   handleChangePage = (event, newPage) => {
@@ -73,27 +88,30 @@ class EmployeeTable extends Component {
 
   
   componentDidMount() {
-    
     this.updatePageData();
   }
+
+  
 
 
   
   updatePageData = () => {
-    getAllEmployees().then(({ data }) => this.setState({ userList: [...data] }));
+    getAllEmployees(this.state.page,this.state.rowsPerPage).then(({data})=>{
+        this.setState({
+            userList:[...data.content],
+            totalEmployee:data.totalElements
+        })
+    });
   };
   
   handleSubmit=()=>{
-    
     getAllEmployeesBySearch(this.state.title,this.state.page,this.state.rowsPerPage)
-    .then(
-      ({ data }) => this.setState(
-        {
+    .then(({ data }) => {
+      this.setState({
           userList: [...data.content],
-          totalEmployee:data.totalElements,
-        }
-        )
-      );
+          totalEmployee:data.totalElements
+        })
+      });
     //getAllEmployeesBySearch(this.state.title,this.state.page,this.state.rowsPerPage).then(({data}) => this.setState({userList: [...data],totalEmployee:data.totalElements}));
   }
 
@@ -104,53 +122,35 @@ class EmployeeTable extends Component {
     });
     console.log(event.target.value);
   }
- handleClick=(key)=>{
+
+
+ handleClickExportBy=(key)=>{
   const fileName="employee";
   const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
   const fileExtension = '.xlsx';
-  
-
-  if(key!=null && key!=" "){
-    getAllEmployeesBySearchExcell(key).
+  getAllEmployeesBySearchExcell(key).
     then(({data}) =>{
       const ws = XLSX.utils.json_to_sheet(data);
       const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
       const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
       const data2 = new Blob([excelBuffer], {type: fileType});
       FileSaver.saveAs(data2, fileName + fileExtension);
-    }
-    );
-  }else{
-    getAllEmployees()
-    .then(({ data }) => {
-          const ws = XLSX.utils.json_to_sheet(data);
-          const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
-          const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-          const data1 = new Blob([excelBuffer], {type: fileType});
-          FileSaver.saveAs(data1, fileName + fileExtension);
-      }
-    );
-  }
-//   exportFileExcell1(key).
-//   then((res) =>{
-   
-
-//     const ws = XLSX.utils.json_to_sheet(res.data);
-//     const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
-//     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-//     const data = new Blob([excelBuffer], {type: fileType});
-//     FileSaver.saveAs(data, fileName + fileExtension);
-// }); 
-  // console.log(this.state.userList);
-  // const ws = XLSX.utils.json_to_sheet(this.state.userList);
-  // console.log(ws);
-  // const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
-  // const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-  // const data = new Blob([excelBuffer], {type: fileType});
-  // FileSaver.saveAs(data, fileName + fileExtension);
-}
-
+    });
   
+}
+  handleClickExportAll=()=>{
+    const fileName="employee";
+    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const fileExtension = '.xlsx';
+    getList().then(({ data }) => {
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const data1 = new Blob([excelBuffer], {type: fileType});
+      FileSaver.saveAs(data1, fileName + fileExtension);
+    });
+  }
+
   render() {
     let {
       rowsPerPage,
@@ -179,7 +179,13 @@ class EmployeeTable extends Component {
       marginTop:"3px",
     };
 
-    
+    var t={
+      display:"none"
+    }
+    if(title == " "){
+      var displaySearch=t;
+    }
+  
     
 
     return (
@@ -187,7 +193,7 @@ class EmployeeTable extends Component {
         <div  className="mb-sm-30">
           <Breadcrumb routeSegments={[{ name: "Employee Table" }]} />
         </div>
-
+        
         <Grid className="mb-16" container spacing={2} >
           <Grid item sm={6} xs={12} style={styleSearchGrid} >
             <Button
@@ -219,7 +225,10 @@ class EmployeeTable extends Component {
                   className="mb-16"
                   variant="contained"
                   color="primary"
-                  onClick={()=>this.handleSubmit()}
+                  onClick={()=>{
+                    this.state.page=0;
+                    this.handleSubmit();
+                  }}
                 >
                   Tìm kiếm
                 </Button>
@@ -231,14 +240,21 @@ class EmployeeTable extends Component {
                   className="mb-16"
                   variant="contained"
                   color="primary"
-                  onClick={()=>this.handleClick(this.state.title)}
+                  onClick={()=>{
+                    if(title &&title !="" ){
+                      this.handleClickExportBy(title)
+                    }else{
+                      this.handleClickExportAll();
+                    }
+                    }
+                  }
                 >
                   Xuất File
               </Button>  
           </Grid>
-            
+      
         </Grid>
-
+        <p style={displaySearch}>Bạn đang tìm kiếm theo : {title}</p>
         <Card className="w-100 overflow-auto" elevation={10}>
           <Table className="crud-table" style={{ whiteSpace: "pre", minWidth: "850px" }}>
             <TableHead>

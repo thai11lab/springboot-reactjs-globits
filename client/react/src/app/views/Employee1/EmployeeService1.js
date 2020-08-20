@@ -1,9 +1,12 @@
 import axios from "axios";
 
-export const getAllEmployees = () => {
+export const getList = () =>{
+  return axios.get("http://localhost:8092/sample/api/employee/all");
+}
+export const getAllEmployees = (page,size) => {
   //return axios.get("/api/user/all");
   //alert( axios.defaults.headers.common["Authorization"]);
-  return axios.get("http://localhost:8092/sample/api/employee");  
+  return axios.get("http://localhost:8092/sample/api/employee?page="+page+"&size="+size);  
 };
 //http://localhost:8081/shop/api/employees
 export const getUserById = id => {
@@ -23,8 +26,8 @@ export const updateUser = User =>{
 
 export const getAllEmployeesBySearch = (query,page,rowsPerPage) =>{
     var pageIndex = page;
-    var params= "page="+pageIndex+"&size="+rowsPerPage;
-    return axios.get("http://localhost:8092/sample/api/employee/search?keyword="+query+"&"+params);
+    var params= pageIndex+"/"+rowsPerPage;
+    return axios.get("http://localhost:8092/sample/api/employee/search/"+query+"/"+params);
 }
 
 export const getAllEmployeesBySearchExcell = (query) =>{
