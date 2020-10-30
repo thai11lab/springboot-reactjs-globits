@@ -1,5 +1,9 @@
 package com.globits.sample.domain;
 
+
+
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,6 +12,9 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
+import javax.ws.rs.DefaultValue;
+
+import org.springframework.data.annotation.CreatedDate;
 
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
@@ -34,6 +41,10 @@ public class Employee {
 	@Column(name="age")
 	private Integer age;
 
+	@Column(name = "created_date")
+	@CreatedDate
+	private Date createdDate = new Date();
+	
 	public Long getId() {
 		return id;
 	}
@@ -82,5 +93,12 @@ public class Employee {
 	public void setAge(Integer age) {
 		this.age = age;
 	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	
+	
 }
 	

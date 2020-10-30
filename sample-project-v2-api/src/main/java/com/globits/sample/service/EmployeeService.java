@@ -13,11 +13,12 @@ import com.globits.sample.dto.EmployeeSearchDTO;
 @Service
 public interface EmployeeService {
 	List<EmployeeDto> findAll();
+	Page<EmployeeDto> findAll(Pageable pageables);
 	EmployeeDto update(Employee employee,Long id);
 	EmployeeDto insert(Employee employee);
 	EmployeeDto deleteOne(Long id);
 	EmployeeDto findById(Long id);
-	Page<EmployeeDto> findBySearch(String keyString,Pageable pageable);
+	Page<EmployeeDto> findBySearch(EmployeeSearchDTO employeeSearchDTO,Pageable pageable);
 	List<EmployeeDto> findBySearch(String keyString);
-	
+	Page<EmployeeDto> findAll1(Pageable pageable);
 }

@@ -15,7 +15,8 @@ import {
   Grid,
 } from "@material-ui/core";
 
-import { getAllEmployees, deleteUser,getAllEmployeesBySearch,getAllEmployeesBySearchExcell,getList} from "./EmployeeService1";
+import {Alert} from "@material-ui/lab";
+import { getAllEmployees, deleteUser,getAllEmployeesBySearch,getAllEmployeesBySearchExcell,getList,exportFileExcell1} from "./EmployeeService1";
 import MemberEditorDialog from "./MemberEditorDialog1";
 import { Breadcrumb, ConfirmationDialog } from "egret";
 import JwtAuthService from '../../services/jwtAuthService';
@@ -23,6 +24,7 @@ import shortid from "shortid";
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import { isThisSecond } from "date-fns";
+import { es } from "date-fns/locale";
 class EmployeeTable extends Component {
   state = {
     rowsPerPage: 10,
@@ -31,7 +33,8 @@ class EmployeeTable extends Component {
     shouldOpenEditorDialog: false,
     shouldOpenConfirmationDialog: false,
     title:null,
-    totalEmployee:0
+    totalEmployee:0,
+    totalPage:0
   };
 
   setPage = page => {
@@ -72,17 +75,27 @@ class EmployeeTable extends Component {
     this.updatePageData();
   };
 
-  handleDeleteUser = user => {
+  handleDeleteUser = (user,index) => { 
     this.setState({
       user,
-      shouldOpenConfirmationDialog: true
+      shouldOpenConfirmationDialog: true,
     });
   };
 
   handleConfirmationResponse = () => {
-    deleteUser(this.state.user).then(() => {
-      this.handleDialogClose();
+    if(this.state.page>=1 && this.state.totalEmployee-this.state.page*this.state.rowsPerPage==1){
+      deleteUser(this.state.user).then(() => {  
+        this.setState({
+          page:this.state.page-1,
+        });
+        this.updatePageData(this.state.page,this.state.rowsPerPage);
+        this.handleDialogClose();
     });
+    }else{
+      deleteUser(this.state.user).then(() => {  
+        this.handleDialogClose();
+      });
+    }
   };
 
 
@@ -97,6 +110,7 @@ class EmployeeTable extends Component {
   
   updatePageData = () => {
     getAllEmployees(this.state.page,this.state.rowsPerPage).then(({data})=>{
+      console.log(data);
         this.setState({
             userList:[...data.content],
             totalEmployee:data.totalElements
@@ -105,14 +119,20 @@ class EmployeeTable extends Component {
   };
   
   handleSubmit=()=>{
-    getAllEmployeesBySearch(this.state.title,this.state.page,this.state.rowsPerPage)
-    .then(({ data }) => {
-      this.setState({
-          userList: [...data.content],
-          totalEmployee:data.totalElements
-        })
-      });
-    //getAllEmployeesBySearch(this.state.title,this.state.page,this.state.rowsPerPage).then(({data}) => this.setState({userList: [...data],totalEmployee:data.totalElements}));
+    let obj={
+      title:this.state.title,
+      page:this.state.page,
+      rowsPerPage:this.state.rowsPerPage
+    };
+    
+    getAllEmployeesBySearch(obj.title,obj.page,obj.rowsPerPage)
+     .then(({ data }) => {
+        this.setState({
+            userList: [...data.content],
+            totalEmployee:data.totalElements
+          })
+     });
+    
   }
 
   
@@ -138,7 +158,7 @@ class EmployeeTable extends Component {
     });
   
 }
-  handleClickExportAll=()=>{
+ handleClickExportAll=()=>{
     const fileName="employee";
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     const fileExtension = '.xlsx';
@@ -150,7 +170,17 @@ class EmployeeTable extends Component {
       FileSaver.saveAs(data1, fileName + fileExtension);
     });
   }
-
+  /*handleExcell=(key)=>{  
+    const fileName="employee";
+    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const fileExtension = '.xlsx';  
+    exportFileExcell1(key).then(res=>{
+      console.log(res.data);
+      const data1 = new Blob([res.data], {type: fileType});
+      const file = new File([data1], fileName + '.xlsx', { type: 'application/octet-stream' });
+      FileSaver.saveAs(file);
+    })
+  }*/
   render() {
     let {
       rowsPerPage,
@@ -158,12 +188,12 @@ class EmployeeTable extends Component {
       userList,
       shouldOpenConfirmationDialog,
       shouldOpenEditorDialog,
-
       title,
       totalEmployee
     } = this.state;
 
-    
+   // userList=userList.reverse();
+
     const styleSearchGrid ={
       display:"flex",
     };
@@ -186,10 +216,17 @@ class EmployeeTable extends Component {
       var displaySearch=t;
     }
   
-    
+    var stt=page*rowsPerPage+1;
 
     return (
       <div className="m-sm-30">
+
+        <Alert severity="error" style={
+          {
+            display:"none"
+          }
+        }>This is an error alert — check it out!</Alert>
+
         <div  className="mb-sm-30">
           <Breadcrumb routeSegments={[{ name: "Employee Table" }]} />
         </div>
@@ -201,7 +238,7 @@ class EmployeeTable extends Component {
               className="mb-16"
               variant="contained"
               color="primary"
-              onClick={() => this.setState({uid:null,shouldOpenEditorDialog: true})}
+              onClick={() => this.setState({shouldOpenEditorDialog: true})}
             >
               Thêm Nhân Viên
             </Button>
@@ -240,6 +277,7 @@ class EmployeeTable extends Component {
                   className="mb-16"
                   variant="contained"
                   color="primary"
+                  
                   onClick={()=>{
                     if(title &&title !="" ){
                       this.handleClickExportBy(title)
@@ -248,6 +286,7 @@ class EmployeeTable extends Component {
                     }
                     }
                   }
+                  
                 >
                   Xuất File
               </Button>  
@@ -274,11 +313,12 @@ class EmployeeTable extends Component {
                 .map((user, index) => (
                   <TableRow key={shortid.generate()}>
                     <TableCell className="px-0" align="left" style={{witdh:"10px"}}>
-                    {user.stt}
+                    {
+                      stt++
+                    }
                     </TableCell>
                     <TableCell className="px-0" 
                         style={{ textTransform: 'lowercase',
-                       
                       }
                     }
                     >
@@ -308,7 +348,7 @@ class EmployeeTable extends Component {
                       >
                         <Icon color="primary">edit</Icon>
                       </IconButton>
-                      <IconButton onClick={() => this.handleDeleteUser(user)}>
+                      <IconButton onClick={() => this.handleDeleteUser(user,index)}>
                         <Icon color="error">delete</Icon>
                       </IconButton>
                     </TableCell>

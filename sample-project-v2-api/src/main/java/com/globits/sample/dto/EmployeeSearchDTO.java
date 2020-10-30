@@ -2,12 +2,12 @@ package com.globits.sample.dto;
 
 public class EmployeeSearchDTO {
 	
-private Integer STT;
+	private Integer STT;
 	
-	
+	private String keyword;
 	private Long id;
 	
-
+	
 	private String code;
 	
 	
@@ -22,7 +22,9 @@ private Integer STT;
 	
 	private Integer age;
 	
-		
+	private Integer page;
+	
+	private Integer size;
 
 	public Integer getSTT() {
 		return STT;
@@ -79,5 +81,35 @@ private Integer STT;
 
 	public void setAge(Integer age) {
 		this.age = age;
-	}	
+	}
+
+	public Integer getPage() {
+		return page;
+	}
+
+	public void setPage(Integer page) {
+		this.page = page;
+	}
+
+	
+
+	public Integer getSize() {
+		return size;
+	}
+
+	public void setSize(Integer size) {
+		this.size = size;
+	}
+
+	public String getKeyword() {
+		return keyword;
+	}
+
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
+	}
+
+	
+	
+	
 }

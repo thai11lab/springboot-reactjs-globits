@@ -10,12 +10,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.globits.sample.domain.Employee;
+import com.globits.sample.dto.EmployeeSearchDTO;
+import com.globits.sample.repository.custom.EmployeeCustom;
 
 @Repository
-public interface EmployeeRepository extends JpaRepository<Employee, Long>{
-	@Query(value = "SELECT * FROM employee e WHERE e.code LIKE %:searchText% OR e.name LIKE %:searchText% OR e.email LIKE %:searchText% OR e.phone LIKE %:searchText% OR e.age LIKE %:searchText% ",nativeQuery = true)
-	Page<Employee> findAllEmployee(String searchText,Pageable pageable);
-	
+public interface EmployeeRepository extends JpaRepository<Employee, Long>,EmployeeCustom{
 	@Query(value = "SELECT * FROM employee e WHERE e.code LIKE %:searchText% OR e.name LIKE %:searchText% OR e.email LIKE %:searchText%  OR e.phone LIKE %:searchText% OR e.age LIKE %:searchText% ",nativeQuery = true)
-	List<Employee> findAllEmployee(String searchText);
+	List<Employee> findAllEmployee(String searchText);	
 }

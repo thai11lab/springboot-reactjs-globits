@@ -6,11 +6,11 @@ export const getList = () =>{
 export const getAllEmployees = (page,size) => {
   //return axios.get("/api/user/all");
   //alert( axios.defaults.headers.common["Authorization"]);
-  return axios.get("http://localhost:8092/sample/api/employee?page="+page+"&size="+size);  
+  return axios.get("http://localhost:8092/sample/api/employee/all1?page="+page+"&size="+size);  
 };
 //http://localhost:8081/shop/api/employees
 export const getUserById = id => {
-  return axios.get("http://localhost:8092/sample/api/employee/"+id);
+  return axios.get("http://localhost:8092/sample/api/employee/id/"+id);
 };
 export const deleteUser = User => {
   return axios.delete("http://localhost:8092/sample/api/employee/delete/"+User.id, User);
@@ -26,8 +26,9 @@ export const updateUser = User =>{
 
 export const getAllEmployeesBySearch = (query,page,rowsPerPage) =>{
     var pageIndex = page;
-    var params= pageIndex+"/"+rowsPerPage;
-    return axios.get("http://localhost:8092/sample/api/employee/search/"+query+"/"+params);
+    // var params= pageIndex+"/"+rowsPerPage;
+    var stringSearch="/by?keyword="+query+"&page="+page+"&size="+rowsPerPage;
+    return axios.get("http://localhost:8092/sample/api/employee/search"+stringSearch);
 }
 
 export const getAllEmployeesBySearchExcell = (query) =>{
@@ -36,7 +37,7 @@ export const getAllEmployeesBySearchExcell = (query) =>{
 }
 
 export const exportFileExcell1 = key =>{
-  if(key!=" " && key != null){
+  if(key && key !=null){
     return axios.get("http://localhost:8092/sample/api/employee/download/employees.xlsx?key="+key);
   }else{
     return axios.get("http://localhost:8092/sample/api/employee/download/employees.xlsx");

@@ -6,8 +6,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 public class EmployeeDto {
-	private Integer stt;
 	
+	private Integer stt;
 	
 	private Long id;
 	
@@ -27,13 +27,7 @@ public class EmployeeDto {
 	private Integer age;
 	
 	
-	public Integer getSTT() {
-		return stt;
-	}
-
-	public void setSTT(Integer sTT) {
-		this.stt = sTT;
-	}
+	
 
 	public Long getId() {
 		return id;
@@ -84,5 +78,14 @@ public class EmployeeDto {
 		this.age = age;
 	}
 
+	public Integer getStt() {
+		return stt;
+	}
+
+	public void setStt(Integer stt) {
+		this.stt = stt;
+	}
+
+	
 	
 }

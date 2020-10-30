@@ -78,15 +78,15 @@ class MemberEditorDialog extends Component {
         <div className="p-24">
           <h4 className="mb-20">Cập nhật nhân viên</h4>
           <ValidatorForm ref="form" onSubmit={this.handleFormSubmit}>
-            <Grid className="mb-16" container spacing={5}>
-              <Grid item sm={6} xs={12}>
+            <Grid className="mb-16" container spacing={2}>
+              
+              <Grid item sm={6} xs={12}>   
                 <TextValidator
                   className="w-100 mb-16"
                   label="Mã nhân viên"
                   onChange={this.handleChange}
                   type="text"
                   name="code"
-                  
                   value={code}
                   validators={["required"]}
                   errorMessages={["Mã nhân viên không được để trống !"]}
@@ -98,8 +98,8 @@ class MemberEditorDialog extends Component {
                   type="text"
                   name="name"
                   value={name}
-                  validators={["required",'matchRegexp:[a-zA-Z] ']}
-                  errorMessages={["Họ tên không được để trống !","Vui lòng nhập kí tự từ a-Z"]}
+                  validators={["required"]}
+                  errorMessages={["Họ tên không được để trống !"]}
                 />
 
                 <TextValidator
@@ -112,7 +112,8 @@ class MemberEditorDialog extends Component {
                   validators={["required","isEmail"]}
                   errorMessages={["Email không được để trống !","Vui lòng nhập đúng format aa@gmail.com"]}
                 />
-
+              </Grid>
+              <Grid item sm={6} xs={12}> 
                 <TextValidator
                   className="w-100 mb-16"
                   label="Số điện thoại"
@@ -134,9 +135,9 @@ class MemberEditorDialog extends Component {
                   validators={["required",'minNumber:0','maxNumber:130']}
                   errorMessages={["Tuổi không được để trống !","Tuổi không được mang kí hiệu -","Tuổi không thể vượt quá 130"]}
                 />
-                
+                </Grid>
               </Grid>
-            </Grid>
+            
 
             <div className="flex flex-space-between flex-middle">
               <Button variant="contained" color="primary" type="submit">

@@ -1,0 +1,12 @@
+com\globits\config\WebInit.class
+com\globits\config\WebSecurityConfig.class
+com\globits\config\RevokeTokenEndpoint.class
+com\globits\config\ApplicationConfig.class
+com\globits\security\rest\TokenController.class
+com\globits\config\DatabaseConfig.class
+com\globits\config\OAuth2AuthorizationServerConfig.class
+com\globits\config\MethodSecurityConfig.class
+com\globits\config\OAuth2ResourceServerConfig.class
+com\globits\config\WebConfig.class
+com\globits\SampleApplication.class
+com\globits\listeners\ApplicationStartupListener.class
